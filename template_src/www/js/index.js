@@ -19,22 +19,28 @@
 var app = {
     // Application Constructor
     initialize: function() {
-        this.bindEvents();
+        document.addEventListener('deviceready', this.onDeviceReady.bind(this), false);
     },
-    // Bind Event Listeners
-    //
-    // Bind any events that are required on startup. Common events are:
-    // 'load', 'deviceready', 'offline', and 'online'.
-    bindEvents: function() {
-        document.addEventListener('deviceready', this.onDeviceReady, false);
-    },
+
     // deviceready Event Handler
     //
-    // The scope of 'this' is the event. In order to call the 'receivedEvent'
-    // function, we must explicitly call 'app.receivedEvent(...);'
+    // Bind any cordova events here. Common events are:
+    // 'pause', 'resume', etc.
     onDeviceReady: function() {
-        app.receivedEvent('deviceready');
+        this.receivedEvent('deviceready');
     },
+
+    onSuccess: function(acceleration) {
+        console.log('Acceleration X: ' + acceleration.x + '\n' +
+          'Acceleration Y: ' + acceleration.y + '\n' +
+          'Acceleration Z: ' + acceleration.z + '\n' +
+          'Timestamp: '      + acceleration.timestamp + '\n');
+    },
+
+    onError: function() {
+        console.log('onError!');
+    },
+
     // Update DOM on a Received Event
     receivedEvent: function(id) {
         var parentElement = document.getElementById(id);
@@ -44,7 +50,12 @@ var app = {
         listeningElement.setAttribute('style', 'display:none;');
         receivedElement.setAttribute('style', 'display:block;');
 
-        console.log('Received Event: ' + id);
+        var options = { frequency: 3000 };  // Update every 3 seconds
+        var watchID = navigator.accelerometer.watchAcceleration(this.onSuccess, this.onError, options);
+
+        console.log('Received Event: ' + watchID);
+
+
     }
 };
 
